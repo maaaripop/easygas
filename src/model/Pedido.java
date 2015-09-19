@@ -22,7 +22,7 @@ public class Pedido {
         String prioridad;
         Nodo idNodo;
         private Cliente idCliente;
-  
+        
    
 
     public Pedido(int idPedido, Date fechaRegistro, int horaSolicitada, int cantGLP, String estado, String prioridad,Cliente idCliente) {

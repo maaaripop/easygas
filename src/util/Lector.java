@@ -57,12 +57,12 @@ public class Lector {
             lineRead = fullLine.split("\\s+");
             
             //leer cantidad de pedidos
-            int nClientes = Integer.parseInt(lineRead[0]);
+            int cantPedidos = Integer.parseInt(lineRead[0]);
 
-            //leer clientes con posicion x,y y su demanda
+           
             // hora solicitada, cant,posx,posy,tipopersona(1 natural,2 juridica)
             int horaSolicitada,cantGLP,posX,posY,tipoPersona;
-            for (int i=0;i<nClientes;i++){
+            for (int i=0;i<cantPedidos;i++){
                 fullLine = br.readLine();
                 lineRead = fullLine.split("\\s+");
                 horaSolicitada=Integer.parseInt(lineRead[0]);
@@ -71,7 +71,9 @@ public class Lector {
                 posY=Integer.parseInt(lineRead[3]);
                 tipoPersona=Integer.parseInt(lineRead[4]);
                 //public Pedido(int idPedido, Date fechaRegistro, int horaSolicitada, int cantGLP, String estado, String prioridad) {
-                Pedido p = new Pedido(i+1,null,horaSolicitada,cantGLP,"no atendido","ninguna");
+                Cliente c = new Cliente();
+                c.setEsPersonaNatural(tipoPersona==1?true:false);
+                Pedido p = new Pedido(i+1,null,horaSolicitada,cantGLP,"no atendido","ninguna",c);
                 Nodo n = new Nodo(1,posX,posY);
                 p.setIdNodo(n);
                 pedidos.add(p);
