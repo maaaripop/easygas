@@ -16,7 +16,7 @@ public class Pedido {
         int idPedido;
         Date fechaRegistro;
         Date fechaEntrega;
-        int horaSolicitada;
+        Date horaSolicitada;
         int cantGLP;
         String estado;
         String prioridad;
@@ -25,7 +25,7 @@ public class Pedido {
         
    
 
-    public Pedido(int idPedido, Date fechaRegistro, int horaSolicitada, int cantGLP, String estado, String prioridad,Cliente idCliente) {
+    public Pedido(int idPedido, Date fechaRegistro, Date horaSolicitada, int cantGLP, String estado, String prioridad,Cliente idCliente) {
         this.idPedido = idPedido;
         this.fechaRegistro = fechaRegistro;
         this.horaSolicitada = horaSolicitada;
@@ -68,11 +68,11 @@ public class Pedido {
         this.fechaEntrega = fechaEntrega;
     }
 
-    public int getHoraSolicitada() {
+    public Date getHoraSolicitada() {
         return horaSolicitada;
     }
 
-    public void setHoraSolicitada(int horaSolicitada) {
+    public void setHoraSolicitada(Date horaSolicitada) {
         this.horaSolicitada = horaSolicitada;
     }
 

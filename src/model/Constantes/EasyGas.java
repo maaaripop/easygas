@@ -3,6 +3,9 @@
  * and open the template in the editor.
  */
 package model.Constantes;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import model.*;
 /**
  *
@@ -21,5 +24,7 @@ public class EasyGas {
     //constantes de las rutas
     public static int velocidad;
     public static Nodo central;
+    public static ArrayList<Turno> lturnos;
+    public static Date horaActual;
     
 }

@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import model.*;
@@ -61,11 +62,12 @@ public class Lector {
 
            
             // hora solicitada, cant,posx,posy,tipopersona(1 natural,2 juridica)
-            int horaSolicitada,cantGLP,posX,posY,tipoPersona;
+            int cantGLP,posX,posY,tipoPersona;
+            String horaSolicitada;
             for (int i=0;i<cantPedidos;i++){
                 fullLine = br.readLine();
                 lineRead = fullLine.split("\\s+");
-                horaSolicitada=Integer.parseInt(lineRead[0]);
+                horaSolicitada=lineRead[0];
                 cantGLP=Integer.parseInt(lineRead[1]);
                 posX=Integer.parseInt(lineRead[2]);
                 posY=Integer.parseInt(lineRead[3]);
@@ -73,7 +75,8 @@ public class Lector {
                 //public Pedido(int idPedido, Date fechaRegistro, int horaSolicitada, int cantGLP, String estado, String prioridad) {
                 Cliente c = new Cliente();
                 c.setEsPersonaNatural(tipoPersona==1?true:false);
-                Pedido p = new Pedido(i+1,null,horaSolicitada,cantGLP,"no atendido","ninguna",c);
+                Date dataHoraSolicitada = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaSolicitada);
+                Pedido p = new Pedido(i+1,null,dataHoraSolicitada,cantGLP,"no atendido","ninguna",c);
                 Nodo n = new Nodo(1,posX,posY);
                 p.setIdNodo(n);
                 pedidos.add(p);
