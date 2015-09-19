@@ -15,8 +15,7 @@ public class Cliente {
     Date fechaRegistro;
     Nodo idNodo;
     String estado;
-    PersonaJuridica idPersonaJuridica;
-    private PersonaNatural idPersonaNatural;
+   
     private boolean esPersonaNatural;
     
     public Cliente(Integer idCliente) {
@@ -66,21 +65,7 @@ public class Cliente {
         this.idNodo = idNodo;
     }
 
-    public PersonaJuridica getIdPersonaJuridica() {
-        return idPersonaJuridica;
-    }
-
-    public void setIdPersonaJuridica(PersonaJuridica idPersonaJuridica) {
-        this.idPersonaJuridica = idPersonaJuridica;
-    }
-
-    public PersonaNatural getIdPersona() {
-        return getIdPersonaNatural();
-    }
-
-    public void setIdPersona(PersonaNatural idPersonaNatural) {
-        this.setIdPersonaNatural(idPersonaNatural);
-    }
+  
 
     /**
      * @return the esPersonaNatural
@@ -99,14 +84,5 @@ public class Cliente {
     /**
      * @return the idPersonaNatural
      */
-    public PersonaNatural getIdPersonaNatural() {
-        return idPersonaNatural;
-    }
-
-    /**
-     * @param idPersonaNatural the idPersonaNatural to set
-     */
-    public void setIdPersonaNatural(PersonaNatural idPersonaNatural) {
-        this.idPersonaNatural = idPersonaNatural;
-    }
+  
 }

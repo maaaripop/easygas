@@ -58,7 +58,7 @@ public class EquipoA_grasp {
                 Grasp g = new Grasp();
                 g.setAlpha(alpha);
                 g.setCamiones(c);
-                g.setPedidos(p);
+                g.setPedidos(pedidosListo);
                 g.setNumIteraciones(nIteraciones);
                 //double inicio = System.currentTimeMillis();
                 ArrayList<Camion> lcamiones=g.correr();
@@ -70,17 +70,24 @@ public class EquipoA_grasp {
         }
     }
     
-    public ArrayList<Pedido> obtenerPedidosListos(ArrayList<Pedido> lpedidos,Turno t){
+    public static ArrayList<Pedido> obtenerPedidosListos(ArrayList<Pedido> lpedidos,Turno t){
         ArrayList<Pedido> pedidosListo= new ArrayList<Pedido>();
         int cantPedidos=lpedidos.size();
         for(int i=0;i<cantPedidos;i++){
-            if(perteneceATurno(lpedidos.get(i).getHoraSolicitada(),t)) pedidosListo.add(lpedidos.get(i));
+            Pedido p = lpedidos.get(i);
+            if(perteneceATurno(p.getHoraSolicitada(),t)) {
+                if(EasyGas.lturnos.get(0).equals(t)&& p.getIdCliente().isEsPersonaNatural())p.setPrioridad("tiene");
+                if(EasyGas.lturnos.get(2).equals(t)&& !p.getIdCliente().isEsPersonaNatural())p.setPrioridad("tiene");
+                pedidosListo.add(p);
+            
+            }
+            
         }
         return pedidosListo;
     
     }
     
-    public Turno obtenerTurnoActual(){
+    public static Turno obtenerTurnoActual(){
         //String originalString = "2010-07-14 09:00:02";
         //Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(originalString);
         //String newString = new SimpleDateFormat("H:mm").format(date); // 9:00
@@ -95,7 +102,7 @@ public class EquipoA_grasp {
     
     }
     
-    public boolean perteneceATurno(Date hora,Turno turno){
+    public static boolean perteneceATurno(Date hora,Turno turno){
         Date horaActual = EasyGas.horaActual;
         return (horaActual.after(turno.getHoraInicio()) && horaActual.before(turno.getHoraFin()));
       

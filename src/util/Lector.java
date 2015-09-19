@@ -76,7 +76,7 @@ public class Lector {
                 Cliente c = new Cliente();
                 c.setEsPersonaNatural(tipoPersona==1?true:false);
                 Date dataHoraSolicitada = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaSolicitada);
-                Pedido p = new Pedido(i+1,null,dataHoraSolicitada,cantGLP,"no atendido","ninguna",c);
+                Pedido p = new Pedido(i+1,null,dataHoraSolicitada,cantGLP,"no atendido","no tiene",c);
                 Nodo n = new Nodo(1,posX,posY);
                 p.setIdNodo(n);
                 pedidos.add(p);

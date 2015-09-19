@@ -147,7 +147,7 @@ public class Grasp {
             while(j<cantCamiones && hayAtendidos(lpedidos)){
                 Camion c= lcamiones.get(j);
                 nodoInicio=EasyGas.central;
-                ArrayList<Camion> LCR= new ArrayList<Camion>();
+                ArrayList<Pedido> LCR= new ArrayList<Pedido>();
                 while(hayCapacidadSuficiente(c,lpedidos)){
                    inicializar(lpedidos);
                    LCR=obtenerLCR(lpedidos);
@@ -188,20 +188,19 @@ public class Grasp {
 
 
     
-    public void obtenerLCR(ArrayList<Pedido>lpedidos){
-        ArrayList<Client> nuevos=new ArrayList<Client>();
+    public ArrayList<Pedido> obtenerLCR(ArrayList<Pedido>lpedidos){
+        ArrayList<Pedido> nuevoPedidos =new ArrayList<Pedido>();
         double costoAux = 0;
-        int length = clients.size();
-        for (int i=0;i<length;i++)
+        int cantPedidos = lpedidos.size();
+        for (int i=0;i<cantPedidos;i++)
         {
-            if (clients.get(i).isAtendido()==false){
-                costoAux =costoArista(clients.get(i).getPosX(),
-                        clients.get(i).getPosy(),posX,posY); 
-                if (costoAux <= beta + alfa*(tau-beta))
-                        nuevos.add(clients.get(i));
+            if (!lpedidos.get(i).getEstado().equals(new String("atendido"))){
+                costoAux =obtenerCostoArista(lpedidos.get(i).getIdNodo(),nodoInicio); 
+                if (costoAux <= minimo + alpha*(maximo-minimo))
+                        nuevoPedidos.add(lpedidos.get(i));
             }
         }
-        return nuevos;
+        return nuevoPedidos;
      
      
      
