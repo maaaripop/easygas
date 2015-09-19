@@ -185,11 +185,27 @@ public class Grasp {
     
     
     }
+    
+    public Pedido obtenerPedidoRandom(ArrayList<Pedido> RCL){
+            int cantPedidos = RCL.size();
+            int numberRandom = (int)(Math.random()*cantPedidos);
+            if (numberRandom < cantPedidos){
+                //System.out.println("escogido bien  " + numberRandom);
+                return RCL.get(numberRandom);
+                
+            }
+            //System.out.println("escogido mal  " + numberRandom );
+            return null;
+    
+    
+    
+    }
 
 
     
     public ArrayList<Pedido> obtenerLCR(ArrayList<Pedido>lpedidos){
         ArrayList<Pedido> nuevoPedidos =new ArrayList<Pedido>();
+        ArrayList<Pedido> conPrioridad =new ArrayList<Pedido>();
         double costoAux = 0;
         int cantPedidos = lpedidos.size();
         for (int i=0;i<cantPedidos;i++)
@@ -197,7 +213,7 @@ public class Grasp {
             if (!lpedidos.get(i).getEstado().equals(new String("atendido"))){
                 costoAux =obtenerCostoArista(lpedidos.get(i).getIdNodo(),nodoInicio); 
                 if (costoAux <= minimo + alpha*(maximo-minimo))
-                        nuevoPedidos.add(lpedidos.get(i));
+                    nuevoPedidos.add(lpedidos.get(i));
             }
         }
         return nuevoPedidos;
