@@ -189,12 +189,24 @@ public class Grasp {
     public Pedido obtenerPedidoRandom(ArrayList<Pedido> RCL){
             int cantPedidos = RCL.size();
             int numberRandom = (int)(Math.random()*cantPedidos);
+            ArrayList<Pedido> conPrioridad=new ArrayList<Pedido>();
+            for(int i=0;i<cantPedidos;i++){
+                if (RCL.get(i).getPrioridad().equals(new String("tiene"))){
+                    conPrioridad.add(RCL.get(i));
+                }
+                
+            
+            }
+            if (conPrioridad.size()!=0) {
+                numberRandom = (int)(Math.random()*conPrioridad.size());
+                return conPrioridad.get(numberRandom);
+            }
             if (numberRandom < cantPedidos){
-                //System.out.println("escogido bien  " + numberRandom);
+             
                 return RCL.get(numberRandom);
                 
             }
-            //System.out.println("escogido mal  " + numberRandom );
+          
             return null;
     
     
