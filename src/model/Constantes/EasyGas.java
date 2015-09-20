@@ -24,7 +24,7 @@ public class EasyGas {
     //constantes de las rutas
     public static int velocidad;
     public static Nodo central;
-    public static ArrayList<Turno> lturnos;
+    public static ArrayList<Turno> lturnos = new ArrayList<Turno>();
     public static Date horaActual;
     
 }

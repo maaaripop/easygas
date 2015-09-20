@@ -17,7 +17,7 @@ public class Pedido {
         Date fechaRegistro;
         Date fechaEntrega;
         Date horaSolicitada;
-        int cantGLP;
+        double cantGLP;
         String estado;
         String prioridad;
         Nodo idNodo;
@@ -25,7 +25,7 @@ public class Pedido {
         
    
 
-    public Pedido(int idPedido, Date fechaRegistro, Date horaSolicitada, int cantGLP, String estado, String prioridad,Cliente idCliente) {
+    public Pedido(int idPedido, Date fechaRegistro, Date horaSolicitada, double cantGLP, String estado, String prioridad,Cliente idCliente) {
         this.idPedido = idPedido;
         this.fechaRegistro = fechaRegistro;
         this.horaSolicitada = horaSolicitada;
@@ -76,11 +76,11 @@ public class Pedido {
         this.horaSolicitada = horaSolicitada;
     }
 
-    public int getCantGLP() {
+    public double getCantGLP() {
         return cantGLP;
     }
 
-    public void setCantGLP(int cantGLP) {
+    public void setCantGLP(double cantGLP) {
         this.cantGLP = cantGLP;
     }
 

@@ -21,8 +21,7 @@ import model.Constantes.EasyGas;
 public class Lector {
     public void cargar(String nombreArchivo,ArrayList<Camion> camiones,ArrayList<Pedido> pedidos){
          try{            
-            //Leer las posiciones de los nodos en el mapa
-            //El centro de distribucion sera siempre el nodo 0
+           
             FileInputStream fistream = new FileInputStream(nombreArchivo);
             DataInputStream in = new DataInputStream(fistream);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -44,10 +43,12 @@ public class Lector {
                //  public TipoCamion(int idTipoCamion, int capacidadDiesel, int capacidadGLP,int taraTon) {
                TipoCamion tc= new TipoCamion(i+1,capacidadDiesel,capacidadGLP,taraTon);
                for(int j=0;j<cantidad;j++){
-                    Camion c = new Camion(j+1,tc);                   
+                    Camion c = new Camion(j+1,tc);   
+                    camiones.add(c);
                }
             
             }
+            
             //leer coordenadas de central de distribucion            
             fullLine = br.readLine();
             lineRead = fullLine.split("\\s+");
@@ -62,13 +63,17 @@ public class Lector {
 
            
             // hora solicitada, cant,posx,posy,tipopersona(1 natural,2 juridica)
-            int cantGLP,posX,posY,tipoPersona;
+            int posX,posY,tipoPersona;
+            double cantGLP;
             String horaSolicitada;
+            Date ahora= new Date();
+            String ahoraString = new SimpleDateFormat("yyyy-MM-dd").format(ahora);
             for (int i=0;i<cantPedidos;i++){
                 fullLine = br.readLine();
                 lineRead = fullLine.split("\\s+");
-                horaSolicitada=lineRead[0];
-                cantGLP=Integer.parseInt(lineRead[1]);
+                horaSolicitada=ahoraString +" "+lineRead[0];
+                //System.out.println(horaSolicitada);
+                cantGLP=Double.parseDouble(lineRead[1]);
                 posX=Integer.parseInt(lineRead[2]);
                 posY=Integer.parseInt(lineRead[3]);
                 tipoPersona=Integer.parseInt(lineRead[4]);

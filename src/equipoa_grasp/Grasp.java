@@ -6,6 +6,7 @@ package equipoa_grasp;
 
 import java.util.ArrayList;
 import model.*;
+import util.*;
 import model.Constantes.EasyGas;
 /**
  *
@@ -82,21 +83,24 @@ public class Grasp {
     
     for (int i =0;i<numIteraciones; i++)
         {
+            
             //ETAPA DE CONSTRUCCION
             //Se trabajara con copias de los arreglos auxiliares
             ArrayList<Camion> lcamiones= new ArrayList<Camion>();
             int cantCamiones = camiones.size();
             for (int a=0; a<cantCamiones;a++) 
                 lcamiones.add(new Camion(camiones.get(a).getIdCamion(),camiones.get(a).getIdTipoCamion()));
-            ArrayList<Pedido> lpedidos= new ArrayList<Pedido>();
+            /*ArrayList<Pedido> lpedidos= new ArrayList<Pedido>();
             int cantPedidos = pedidos.size();
             //    public Pedido(int idPedido, Date fechaRegistro, int horaSolicitada, int cantGLP, String estado, String prioridad,Cliente idCliente) {
             for (int b=0; b<cantCamiones;b++) 
                 lpedidos.add(new Pedido(pedidos.get(b).getIdPedido(),pedidos.get(b).getFechaRegistro(),pedidos.get(b).getHoraSolicitada(),
                 pedidos.get(b).getCantGLP(),pedidos.get(b).getEstado(),pedidos.get(b).getPrioridad(),pedidos.get(b).getIdCliente()));
+            */
+            nodoInicio=EasyGas.central;
+            inicializar(); // calcula valar minimo y maximo
             
-            inicializar(lpedidos); // calcula valar minimo y maximo
-            nCamiones = iniciarFaseConstructiva(lcamiones,lpedidos);
+            nCamiones = iniciarFaseConstructiva(lcamiones);
             //vehicles2OPT = nVehicles;
             //ETAPA DE MEJORA 2OPT
             //util.Reader r = new util.Reader();
@@ -141,27 +145,69 @@ public class Grasp {
             
     }
      
-     public ArrayList<Camion> iniciarFaseConstructiva(ArrayList<Camion>lcamiones,ArrayList<Pedido>lpedidos){
+     public ArrayList<Camion> iniciarFaseConstructiva(ArrayList<Camion>lcamiones){
             int cantCamiones=lcamiones.size();
-            int j=1;
-            while(j<cantCamiones && hayAtendidos(lpedidos)){
+            int j=0;
+            Ruta r = new Ruta();
+            Arista a = new Arista();
+            ArrayList<Arista> laristas=new ArrayList<Arista>();
+            while(j<cantCamiones && hayAtendidos()){
+                System.out.println("hay por atender");
                 Camion c= lcamiones.get(j);
                 nodoInicio=EasyGas.central;
                 ArrayList<Pedido> LCR= new ArrayList<Pedido>();
-                while(hayCapacidadSuficiente(c,lpedidos)){
-                   inicializar(lpedidos);
-                   LCR=obtenerLCR(lpedidos);
+                while(hayAtendidos() && hayCapacidadSuficiente(c)){
+                  
+                   a.setNodoOrigen(nodoInicio); 
+                   inicializar();
+                   LCR=obtenerLCR();
                    Pedido p=obtenerPedidoRandom(LCR);
-                   if(p.getCantGLP()<=c.getIdTipoCamion().getCapacidadGLP()){
-                       agregarSolucion(c,p);
+                   if(p.getCantGLP()<=c.getCantGLPActual()){
+                       c.setCantGLPActual(c.getCantGLPActual()-p.getCantGLP());
+                       a.setNodoDestino(p.getIdNodo());
+                       laristas.add(a);
+                       for(int k=0;k<pedidos.size();k++){
+                           if(pedidos.get(k).equals(p))
+                              pedidos.get(k).setEstado("atendido");
+                           
+                       }
                        nodoInicio=p.getIdNodo();
+                       System.out.println("atendido");
+                       System.out.println("Hora atendido " + Reloj.horaActual.getTime());
                    }
                 }
+                lcamiones.get(j).setRuta(r);
                 j++;
            }
            return lcamiones;
     }
+    public boolean hayCapacidadSuficiente(Camion c){
+        
+        int cantPedido = pedidos.size();
+            for (int i=0;i<cantPedido;i++)
+            {
+                    if (pedidos.get(i).getEstado().equals(new String("atendido"))==false){
+                            if (c.getIdTipoCamion().getCapacidadGLP() >= pedidos.get(i).getCantGLP())
+                            {
+                                    return true;
+                            }
+
+                    }
+            }
+            return false;
     
+    
+    }
+     
+    public boolean hayAtendidos(){
+        int cantPedidos=pedidos.size();
+        for(int i=0;i<cantPedidos;i++){
+            if(!pedidos.get(i).getEstado().equals(new String("atendido"))) return true;
+           
+        }
+        return false;
+    
+    } 
     public ArrayList<Camion> iniciar2OPT(ArrayList<Camion>nCamiones){
         int n = nCamiones.size();
 
@@ -215,17 +261,17 @@ public class Grasp {
 
 
     
-    public ArrayList<Pedido> obtenerLCR(ArrayList<Pedido>lpedidos){
+    public ArrayList<Pedido> obtenerLCR(){
         ArrayList<Pedido> nuevoPedidos =new ArrayList<Pedido>();
         ArrayList<Pedido> conPrioridad =new ArrayList<Pedido>();
         double costoAux = 0;
-        int cantPedidos = lpedidos.size();
+        int cantPedidos = pedidos.size();
         for (int i=0;i<cantPedidos;i++)
         {
-            if (!lpedidos.get(i).getEstado().equals(new String("atendido"))){
-                costoAux =obtenerCostoArista(lpedidos.get(i).getIdNodo(),nodoInicio); 
+            if (!pedidos.get(i).getEstado().equals(new String("atendido"))){
+                costoAux =obtenerCostoArista(pedidos.get(i).getIdNodo(),nodoInicio); 
                 if (costoAux <= minimo + alpha*(maximo-minimo))
-                    nuevoPedidos.add(lpedidos.get(i));
+                    nuevoPedidos.add(pedidos.get(i));
             }
         }
         return nuevoPedidos;
@@ -262,17 +308,19 @@ public class Grasp {
         return costo;
     }
     
-    public void inicializar(ArrayList<Pedido> lpedidos){
+    public void inicializar(){
         
             minimo = 0;
             maximo= 0;
-            int cantPedidos = lpedidos.size();
+            int cantPedidos = pedidos.size();
             int flag=0;
             double costoAux;
+           
+            
             for (int i=0;i<cantPedidos;i++)
             {
-                    if (lpedidos.get(i).getEstado().equals(new String("atendido"))==false){
-                            costoAux=obtenerCostoArista(nodoInicio,lpedidos.get(i).getIdNodo());
+                    if (pedidos.get(i).getEstado().equals(new String("atendido"))==false){
+                            costoAux=obtenerCostoArista(nodoInicio,pedidos.get(i).getIdNodo());
                             if (flag == 0){
                                     maximo= costoAux;
                                     minimo = costoAux;

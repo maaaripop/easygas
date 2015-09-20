@@ -10,8 +10,8 @@ import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import javax.swing.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import model.Constantes.EasyGas;
 
 
@@ -20,10 +20,9 @@ import model.Constantes.EasyGas;
  * @author alulab14
  */
 public class Reloj {
-    Calendar horaActual;
+    public static Calendar horaActual;
     DateFormat formato;
-    int factorTiempo = 1000;
-
+    int factorTiempo = 1; //1000 para un reloj normal =24*60/(30*1000)=0,048
     public Reloj() {
 
             formato = new SimpleDateFormat("HH:mm:ss");
@@ -32,13 +31,30 @@ public class Reloj {
             horaActual.set(Calendar.HOUR_OF_DAY,0);
             horaActual.set(Calendar.MINUTE, 0);
             horaActual.set(Calendar.SECOND, 0);
+            System.out.println("Empezo reloj");
+            /*
             Timer t1 = new Timer(10, new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     horaActual.add(Calendar.SECOND, 1);
                     EasyGas.horaActual=horaActual.getTime();
                 }
             });
-            t1.start();
+            t1.start(); */
+            
+            
+             TimerTask task = new TimerTask() {
+                @Override
+                public void run()
+                {
+                    
+                    horaActual.add(Calendar.SECOND, 1);
+                    
+                    //EasyGas.horaActual=horaActual.getTime();
+                    
+                }
+                };
+            Timer t = new Timer();
+            t.schedule(task,10, factorTiempo);
    }
 }
 

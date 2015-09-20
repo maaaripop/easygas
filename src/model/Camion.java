@@ -12,6 +12,7 @@ public class Camion {
    private int idCamion;
    private TipoCamion idTipoCamion;
    private Ruta ruta;
+   private double cantGLPActual;
 
     /**
      * @return the idCamion
@@ -22,6 +23,7 @@ public class Camion {
     public Camion(int idCamion,TipoCamion idTipoCamion){
         this.idCamion=idCamion;
         this.idTipoCamion=idTipoCamion;
+        this.cantGLPActual=idTipoCamion.getCapacidadGLP();
     
     }
     /**
@@ -57,6 +59,20 @@ public class Camion {
      */
     public void setRuta(Ruta ruta) {
         this.ruta = ruta;
+    }
+
+    /**
+     * @return the cantGLPActual
+     */
+    public double getCantGLPActual() {
+        return cantGLPActual;
+    }
+
+    /**
+     * @param cantGLPActual the cantGLPActual to set
+     */
+    public void setCantGLPActual(double cantGLPActual) {
+        this.cantGLPActual = cantGLPActual;
     }
 }
 

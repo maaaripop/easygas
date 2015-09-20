@@ -13,14 +13,14 @@ import java.util.ArrayList;
 public class TipoCamion {
     int idTipoCamion;
     int capacidadDiesel;
-    private int capacidadGLP;
+    private double capacidadGLP;
     private int taraTon;
     
     public TipoCamion(int idTipoCamion) {
         this.idTipoCamion = idTipoCamion;
     }
 
-    public TipoCamion(int idTipoCamion, int capacidadDiesel, int capacidadGLP,int taraTon) {
+    public TipoCamion(int idTipoCamion, int capacidadDiesel, double capacidadGLP,int taraTon) {
         this.idTipoCamion = idTipoCamion;
         this.capacidadDiesel = capacidadDiesel;
         this.capacidadGLP = capacidadGLP;
@@ -43,7 +43,7 @@ public class TipoCamion {
         this.capacidadDiesel = capacidadDiesel;
     }
 
-    public int getCapacidadGLP() {
+    public double getCapacidadGLP() {
         return capacidadGLP;
     }
 
