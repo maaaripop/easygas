@@ -20,7 +20,7 @@ public class Pedido {
         double cantGLP;
         String estado;
         String prioridad;
-        Nodo idNodo;
+        
         private Cliente idCliente;
         
    
@@ -35,14 +35,9 @@ public class Pedido {
         this.idCliente=idCliente;
     }
     
-     public Nodo getIdNodo() {
-        return idNodo;
-    }
+   
 
-    public void setIdNodo(Nodo idNodo) {
-        this.idNodo = idNodo;
-    }
-
+   
   
     public int getIdPedido() {
         return idPedido;

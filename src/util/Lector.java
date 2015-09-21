@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import model.*;
+import equipoa_grasp.*;
 import model.Constantes.EasyGas;
 
 /**
@@ -83,7 +84,7 @@ public class Lector {
                 Date dataHoraSolicitada = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaSolicitada);
                 Pedido p = new Pedido(i+1,null,dataHoraSolicitada,cantGLP,"no atendido","no tiene",c);
                 Nodo n = new Nodo(1,posX,posY);
-                p.setIdNodo(n);
+                p.getIdCliente().setIdNodo(n);
                 pedidos.add(p);
                 
             }
@@ -95,6 +96,13 @@ public class Lector {
         }
     
     }
+    public void obtenerReporte(ArrayList<Camion> camiones){
     
+    
+            Grasp g = new Grasp();
+            double costo = g.obtenerCostoTotal(camiones);
+            System.out.println("Costo total es" + costo);
+    
+    }
    
 }

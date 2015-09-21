@@ -10,8 +10,10 @@ package model;
  * @author alulab14
  */
 public class Arista {
+    // todos los nodos destino tienen pedido
     private Nodo nodoOrigen;
     private Nodo nodoDestino;
+    private double cantGLP;
 
     /**
      * @return the nodoOrigen
@@ -39,5 +41,19 @@ public class Arista {
      */
     public void setNodoDestino(Nodo nodoDestino) {
         this.nodoDestino = nodoDestino;
+    }
+
+    /**
+     * @return the cantGLP
+     */
+    public double getCantGLP() {
+        return cantGLP;
+    }
+
+    /**
+     * @param cantGLP the cantGLP to set
+     */
+    public void setCantGLP(double cantGLP) {
+        this.cantGLP = cantGLP;
     }
 }

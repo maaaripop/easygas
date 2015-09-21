@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author alulab14
  */
 public class Ruta {
-    private ArrayList<Arista> laristas;
+    private ArrayList<Arista> laristas=new ArrayList<Arista>();
 
     /**
      * @return the laristas

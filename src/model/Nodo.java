@@ -8,10 +8,12 @@ package model;
  *
  * @author a20080480
  */
+
 public class Nodo {
     int idNodo;
     int coordX;
     int coordY;
+    private Pedido pedido;
     String habilitado;
     public Nodo(Integer idNodo) {
         this.idNodo = idNodo;
@@ -53,5 +55,19 @@ public class Nodo {
 
     public void setHabilitado(String habilitado) {
         this.habilitado = habilitado;
+    }
+
+    /**
+     * @return the pedido
+     */
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    /**
+     * @param pedido the pedido to set
+     */
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 }

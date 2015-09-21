@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class TipoCamion {
     int idTipoCamion;
-    int capacidadDiesel;
+    private double capacidadDiesel;
     private double capacidadGLP;
     private int taraTon;
     
@@ -35,11 +35,11 @@ public class TipoCamion {
         this.idTipoCamion = idTipoCamion;
     }
 
-    public int getCapacidadDiesel() {
+    public double getCapacidadDiesel() {
         return capacidadDiesel;
     }
 
-    public void setCapacidadDiesel(int capacidadDiesel) {
+    public void setCapacidadDiesel(double capacidadDiesel) {
         this.capacidadDiesel = capacidadDiesel;
     }
 

@@ -31,7 +31,7 @@ public class Reloj {
             horaActual.set(Calendar.HOUR_OF_DAY,0);
             horaActual.set(Calendar.MINUTE, 0);
             horaActual.set(Calendar.SECOND, 0);
-            System.out.println("Empezo reloj");
+            System.out.println("Empezo el dia");
             /*
             Timer t1 = new Timer(10, new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
