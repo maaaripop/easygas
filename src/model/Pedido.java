@@ -20,7 +20,7 @@ public class Pedido {
         double cantGLP;
         String estado;
         String prioridad;
-        
+      
         private Cliente idCliente;
         
    

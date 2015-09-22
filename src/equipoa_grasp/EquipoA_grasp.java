@@ -64,7 +64,7 @@ public class EquipoA_grasp {
         Reloj r = new Reloj();
        
         double alpha = 0.3;
-        int nIteraciones = 10;
+        int nIteraciones = 1;
         
         while(true){
             ArrayList<Camion> lcamiones= new ArrayList<Camion>();
@@ -74,10 +74,11 @@ public class EquipoA_grasp {
                 break;
             }
             t = obtenerTurnoActual();
+            EasyGas.turnoActual=t;
             int cantListos=0;
             if(t!=null) cantListos=obtenerPedidosListos(p,t);
             //System.out.println(cantListos);
-            //System.out.println(Reloj.horaActual.getTime());
+            System.out.println(Reloj.horaActual.getTime());
             //if (cantListos==0) System.out.println("No hay pedidos para este turno aun");
            
 
@@ -85,7 +86,7 @@ public class EquipoA_grasp {
                 //System.out.println("Correr el grasp para " +cantListos );
                
                 //System.out.println("No Atendidos " + obtenerPedidosNoAtendidos(p,t) );
-                Grasp g = new Grasp();
+                    Grasp g = new Grasp();
                // for (int i = 0; i < 10; i++) {
                     
                     g.setAlpha(alpha);

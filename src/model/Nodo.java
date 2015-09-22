@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.Date;
+
 /**
  *
  * @author a20080480
@@ -15,6 +17,7 @@ public class Nodo {
     int coordY;
     private Pedido pedido;
     String habilitado;
+    private Date horaLlegada;
     public Nodo(Integer idNodo) {
         this.idNodo = idNodo;
     }
@@ -69,5 +72,19 @@ public class Nodo {
      */
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
+    }
+
+    /**
+     * @return the horaLlegada
+     */
+    public Date getHoraLlegada() {
+        return horaLlegada;
+    }
+
+    /**
+     * @param horaLlegada the horaLlegada to set
+     */
+    public void setHoraLlegada(Date horaLlegada) {
+        this.horaLlegada = horaLlegada;
     }
 }

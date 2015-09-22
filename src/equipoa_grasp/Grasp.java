@@ -6,6 +6,8 @@ package equipoa_grasp;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import model.*;
 import util.*;
 import model.Constantes.EasyGas;
@@ -154,11 +156,14 @@ public class Grasp {
                 Ruta r = new Ruta();
                 Arista a = new Arista();
                 ArrayList<Arista> laristas=new ArrayList<Arista>();
-                //System.out.println("hay por atender");
+                System.out.println("hay por atender");
                 Camion c= lcamiones.get(j);
                 nodoInicio=EasyGas.central;
                 ArrayList<Pedido> LCR= new ArrayList<Pedido>();
-                while(hayListos(lpedidos) && hayCapacidadSuficiente(c,lpedidos)){
+                nodoInicio.setHoraLlegada(Reloj.horaActual.getTime()); //hora que sale el camion
+                
+                while(hayListos(lpedidos) && hayCapacidadSuficiente(c,lpedidos) && dentroDelturno()){
+                  
                    int cantListos=obtenerCantListo(lpedidos);
                    //System.out.println("hay "+cantListos + " listos con " + c.getCantGLPActual());
                    a.setNodoOrigen(nodoInicio); 
@@ -174,7 +179,7 @@ public class Grasp {
                         LCR=obtenerLCR(c,alpha,lpedidos);
                     }
                   
-                   System.out.println(LCR.size());
+                   //System.out.println(LCR.size());
                    Pedido p=obtenerPedidoRandom(LCR);
                    
                    if(p!=null){ 
@@ -182,23 +187,31 @@ public class Grasp {
                        double cantGLPsobrante=(c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual());
                        double consumoDieselsobrante= (c.getIdTipoCamion().getCapacidadDiesel()-obtenerConsumo(c));
                         //System.out.println("No "+ p.getIdPedido()+ " tiene pedido de "+ p.getCantGLP()+ " pero me sobra " + cantGLPsobrante);
-                       if(p.getCantGLP()<=cantGLPsobrante && obtenerConsumoPedido(c,p)<=consumoDieselsobrante){
+                       
+                       if(p.getCantGLP()<=cantGLPsobrante && obtenerConsumoPedido(c,p)<=consumoDieselsobrante && esTiempoDeEntregar(p,nodoInicio)){
+                           
                            c.setCantGLPActual(c.getCantGLPActual()+p.getCantGLP());
                            a.setNodoDestino(p.getIdCliente().getIdNodo());
                            a.getNodoDestino().setPedido(p);
+                           a.getNodoDestino().setHoraLlegada(p.getFechaRegistro());
                            a.setCantGLP(p.getCantGLP());
                            c.setCantDieselActual(c.getCantDieselActual()+obtenerConsumoPedido(c,p));
                            laristas.add(a);
                            for(int k=0;k<lpedidos.size();k++){
                                if(lpedidos.get(k).equals(p)){
                                   lpedidos.get(k).setEstado("atendido");
-                                  //System.out.println("camion" +c.getIdCamion() +" "+  lpedidos.get(k).getEstado() +" pedido nro " + p.getIdPedido() + " con GLP " + p.getCantGLP() + " hora requerida " + p.getHoraSolicitada() +"  Hora atendido " + Reloj.horaActual.getTime());
+                                  break;
                                }
 
                            }
+                           
+                           Calendar horaCalendar= Calendar.getInstance();
+                           horaCalendar.setTime(nodoInicio.getHoraLlegada());        
+                           horaCalendar.add(Calendar.SECOND,obtenerTiempoEntrega(p,nodoInicio));
+                           System.out.println("camion" +c.getIdCamion() +"  pedido nro " + p.getIdPedido() + " con GLP " + p.getCantGLP() + " hora requerida " + p.getHoraSolicitada() +"  Hora atendido " + horaCalendar.getTime());
                            nodoInicio=p.getIdCliente().getIdNodo();
-
-
+                           nodoInicio.setHoraLlegada(horaCalendar.getTime());
+                           
 
                        }
                    }
@@ -216,6 +229,29 @@ public class Grasp {
     
     }
     
+    public boolean dentroDelTurno(){
+        Date horaUltimoPedidoEntregado=nodoInicio.getHoraLlegada();
+        boolean resultado= EasyGas.turnoActual.getHoraFin().after(horaUltimoPedidoEntregado) ; //  hora fin > horasolicitada
+        return resultado;
+    }
+    
+    public boolean esTiempoDeEntregar(Pedido p, Nodo nodoIni){
+      
+        int tiempoSegundos=obtenerTiempoEntrega(p,nodoIni);
+        Calendar calendarHoraFin= Calendar.getInstance();
+        calendarHoraFin.setTime(nodoIni.getHoraLlegada());        
+        calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
+        boolean resultado=calendarHoraFin.getTime().after(p.getHoraSolicitada()) ; // hora fin > horasolicitada
+        return resultado;
+    
+    }
+    
+    
+    public int obtenerTiempoEntrega(Pedido p,Nodo nodoIni){
+        double tiempo = obtenerDistancia(nodoIni,p.getIdCliente().getIdNodo())/EasyGas.velocidad*1.0;
+        int tiempoSegundos=(int)Math.round(tiempo*60*60);
+        return tiempoSegundos;
+    }
     public double obtenerConsumoPedido(Camion c, Pedido p){
     
         double consumo=0.05 * ( (c.getIdTipoCamion().getTaraTon()+c.getCantGLPActual()) / 52 )*obtenerDistancia(nodoInicio,p.getIdCliente().getIdNodo());
@@ -298,7 +334,7 @@ public class Grasp {
                             //System.out.println("Diesel Restante " + consumoDieselRestante);
                             //System.out.println("Diesel para el pedido " + consumoDieselPedido);
                             if (cantGLPRestante >= lpedido.get(i).getCantGLP() && consumoDieselRestante>=consumoDieselPedido)
-                            {       System.out.println("Hay espacio para el pedido " + pedidos.get(i).getIdPedido());
+                            {     //  System.out.println("Hay espacio para el pedido " + pedidos.get(i).getIdPedido());
                                     return true;
                             }
                             
@@ -441,8 +477,8 @@ Retornar listaVehiculos
         
         }
         catch(Exception e){
-            System.out.println("Error noob");
-            System.out.println(e.toString());
+            //System.out.println("Error noob");
+            //System.out.println(e.toString());
         }
         return 1;
         
