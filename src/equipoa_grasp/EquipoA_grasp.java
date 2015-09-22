@@ -78,7 +78,7 @@ public class EquipoA_grasp {
             int cantListos=0;
             if(t!=null) cantListos=obtenerPedidosListos(p,t);
             //System.out.println(cantListos);
-            System.out.println(Reloj.horaActual.getTime());
+            //System.out.println(Reloj.horaActual.getTime());
             //if (cantListos==0) System.out.println("No hay pedidos para este turno aun");
            
 

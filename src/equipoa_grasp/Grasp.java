@@ -156,13 +156,13 @@ public class Grasp {
                 Ruta r = new Ruta();
                 Arista a = new Arista();
                 ArrayList<Arista> laristas=new ArrayList<Arista>();
-                System.out.println("hay por atender");
+                //System.out.println("hay por atender");
                 Camion c= lcamiones.get(j);
                 nodoInicio=EasyGas.central;
                 ArrayList<Pedido> LCR= new ArrayList<Pedido>();
                 nodoInicio.setHoraLlegada(Reloj.horaActual.getTime()); //hora que sale el camion
                 
-                while(hayListos(lpedidos) && hayCapacidadSuficiente(c,lpedidos) && dentroDelturno()){
+                while(hayListos(lpedidos) && hayCapacidadSuficiente(c,lpedidos) && dentroDelTurno()){
                   
                    int cantListos=obtenerCantListo(lpedidos);
                    //System.out.println("hay "+cantListos + " listos con " + c.getCantGLPActual());
@@ -241,7 +241,11 @@ public class Grasp {
         Calendar calendarHoraFin= Calendar.getInstance();
         calendarHoraFin.setTime(nodoIni.getHoraLlegada());        
         calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
-        boolean resultado=calendarHoraFin.getTime().after(p.getHoraSolicitada()) ; // hora fin > horasolicitada
+        final long MILLSECS_PER_HOUR = 60 * 60 * 1000; 
+        long diferencia =  (calendarHoraFin.getTimeInMillis() - nodoIni.getHoraLlegada().getTime())/MILLSECS_PER_HOUR; 
+        long diferenciaLimite=1000*60*60;
+        boolean resultado=diferenciaLimite>=diferencia;
+        //boolean resultado=calendarHoraFin.getTime().after(p.getHoraSolicitada()) ; // hora fin > horasolicitada
         return resultado;
     
     }
