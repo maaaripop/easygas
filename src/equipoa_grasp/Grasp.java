@@ -156,7 +156,7 @@ public class Grasp {
                 Ruta r = new Ruta();
                 Arista a = new Arista();
                 ArrayList<Arista> laristas=new ArrayList<Arista>();
-                //System.out.println("hay por atender");
+                System.out.println("hay por atender");
                 Camion c= lcamiones.get(j);
                 nodoInicio=EasyGas.central;
                 ArrayList<Pedido> LCR= new ArrayList<Pedido>();
@@ -165,7 +165,7 @@ public class Grasp {
                 while(hayListos(lpedidos) && hayCapacidadSuficiente(c,lpedidos) && dentroDelTurno()){
                   
                    int cantListos=obtenerCantListo(lpedidos);
-                   //System.out.println("hay "+cantListos + " listos con " + c.getCantGLPActual());
+                   System.out.println("hay "+cantListos + " listos con " + c.getCantGLPActual());
                    a.setNodoOrigen(nodoInicio); 
                    inicializar(c,lpedidos);
                   // System.out.println("Depues de inicializar");
@@ -228,7 +228,7 @@ public class Grasp {
         return consumo;                    
     
     }
-    
+    // no aplica porque si viene un camion nuevo
     public boolean dentroDelTurno(){
         Date horaUltimoPedidoEntregado=nodoInicio.getHoraLlegada();
         boolean resultado= EasyGas.turnoActual.getHoraFin().after(horaUltimoPedidoEntregado) ; 
