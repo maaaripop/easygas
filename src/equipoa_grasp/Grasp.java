@@ -208,7 +208,7 @@ public class Grasp {
                            Calendar horaCalendar= Calendar.getInstance();
                            horaCalendar.setTime(nodoInicio.getHoraLlegada());        
                            horaCalendar.add(Calendar.SECOND,obtenerTiempoEntrega(p,nodoInicio));
-                           System.out.println("camion" +c.getIdCamion() +"  pedido nro " + p.getIdPedido() + " con GLP " + p.getCantGLP() + " hora requerida " + p.getHoraSolicitada() +"  Hora atendido " + horaCalendar.getTime());
+                           System.out.println(Reloj.horaActual.getTime() + " camion" +c.getIdCamion() +"  pedido nro " + p.getIdPedido() + " con GLP " + p.getCantGLP() + " hora requerida " + p.getHoraSolicitada() +"  Hora atendido " + horaCalendar.getTime());
                            nodoInicio=p.getIdCliente().getIdNodo();
                            nodoInicio.setHoraLlegada(horaCalendar.getTime());
                            
@@ -231,7 +231,8 @@ public class Grasp {
     
     public boolean dentroDelTurno(){
         Date horaUltimoPedidoEntregado=nodoInicio.getHoraLlegada();
-        boolean resultado= EasyGas.turnoActual.getHoraFin().after(horaUltimoPedidoEntregado) ; //  hora fin > horasolicitada
+        boolean resultado= EasyGas.turnoActual.getHoraFin().after(horaUltimoPedidoEntregado) ; 
+       // System.out.println(resultado);
         return resultado;
     }
     
@@ -242,9 +243,9 @@ public class Grasp {
         calendarHoraFin.setTime(nodoIni.getHoraLlegada());        
         calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
         final long MILLSECS_PER_HOUR = 60 * 60 * 1000; 
-        long diferencia =  (calendarHoraFin.getTimeInMillis() - nodoIni.getHoraLlegada().getTime())/MILLSECS_PER_HOUR; 
+        long diferencia =  (calendarHoraFin.getTimeInMillis() - nodoIni.getHoraLlegada().getTime()); 
         long diferenciaLimite=1000*60*60;
-        boolean resultado=diferenciaLimite>=diferencia;
+        boolean resultado=diferencia<=diferenciaLimite;
         //boolean resultado=calendarHoraFin.getTime().after(p.getHoraSolicitada()) ; // hora fin > horasolicitada
         return resultado;
     
@@ -253,7 +254,7 @@ public class Grasp {
     
     public int obtenerTiempoEntrega(Pedido p,Nodo nodoIni){
         double tiempo = obtenerDistancia(nodoIni,p.getIdCliente().getIdNodo())/EasyGas.velocidad*1.0;
-        int tiempoSegundos=(int)Math.round(tiempo*60*60);
+        int tiempoSegundos=(int)Math.round(tiempo*60*60 );
         return tiempoSegundos;
     }
     public double obtenerConsumoPedido(Camion c, Pedido p){
