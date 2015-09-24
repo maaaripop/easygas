@@ -18,6 +18,7 @@ public class Nodo {
     private Pedido pedido;
     String habilitado;
     private Date horaLlegada;
+    private int cantPrioridades;
     public Nodo(Integer idNodo) {
         this.idNodo = idNodo;
     }
@@ -26,6 +27,7 @@ public class Nodo {
         this.idNodo = idNodo;
         this.coordX = coordX;
         this.coordY = coordY;
+        this.cantPrioridades=0;
     }
 
     public int getIdNodo() {
@@ -86,5 +88,19 @@ public class Nodo {
      */
     public void setHoraLlegada(Date horaLlegada) {
         this.horaLlegada = horaLlegada;
+    }
+
+    /**
+     * @return the cantPrioridades
+     */
+    public int getCantPrioridades() {
+        return cantPrioridades;
+    }
+
+    /**
+     * @param cantPrioridades the cantPrioridades to set
+     */
+    public void setCantPrioridades(int cantPrioridades) {
+        this.cantPrioridades = cantPrioridades;
     }
 }

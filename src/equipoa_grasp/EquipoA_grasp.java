@@ -64,7 +64,7 @@ public class EquipoA_grasp {
         Reloj r = new Reloj();
        
         double alpha = 0.3;
-        int nIteraciones = 1;
+        int nIteraciones = 2000;
         
         while(true){
             ArrayList<Camion> lcamiones= new ArrayList<Camion>();
@@ -79,7 +79,8 @@ public class EquipoA_grasp {
             if(t!=null) cantListos=obtenerPedidosListos(p,t);
             //System.out.println(cantListos);
             //System.out.println(Reloj.horaActual.getTime());
-            //if (cantListos==0) System.out.println("No hay pedidos para este turno aun");
+            
+            
            
 
             if(cantListos!=0){
@@ -96,7 +97,7 @@ public class EquipoA_grasp {
                     //double inicio = System.currentTimeMillis();
                     lcamiones=g.correr();
                     p=g.getPedidos();
-                    
+                    System.out.println("Costo: " + g.obtenerCostoTotal(lcamiones));
                     double fin = System.currentTimeMillis();
                     //double tiempoTotal=(fin-inicio)/1000;
                     //System.out.printf("Tiempo de ejecucion: %.4f\n",tiempoTotal);

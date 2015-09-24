@@ -23,8 +23,8 @@ public class Grasp {
     private ArrayList<Pedido> pedidos;
     private double alpha; 
     private int numIteraciones;
-    private double maximo;
-    private double minimo;
+    private double beta; // mejor valor
+    private double tau;  // peor valor
     private Nodo nodoInicio;
     /**
      * @return the camiones
@@ -83,13 +83,14 @@ public class Grasp {
     }
     
     public ArrayList<Camion> correr(){
-    int i=0;
+   
     ArrayList<Pedido> lpedidos= new ArrayList<Pedido>();
     ArrayList<Camion> lcamiones= new ArrayList<Camion>();
     double aux1=0;
     double aux2=0;
-    for (i =0;i<numIteraciones; i++){
-            //System.out.println("iteracion no " + i);
+    int numIteracionesParada=0;
+    //while(true){
+    for(int i=0;i<numIteraciones;i++)  {      //System.out.println("iteracion no " + numIteracionesParada);
             //Se trabajara con copias de los arreglos auxiliares
             lpedidos= new ArrayList<Pedido>();
             lcamiones= new ArrayList<Camion>();
@@ -112,7 +113,7 @@ public class Grasp {
                 aux1= obtenerCostoTotal(camiones2OPT);
                 aux2= obtenerCostoTotal (sol);
                
-                if (aux1 <= aux2)
+                if (aux1 >aux2)
                 {
                     
                     //System.out.println("c nueva " + aux1);
@@ -121,11 +122,22 @@ public class Grasp {
                     //System.out.println("Cambia iteraci" + i);*/
                     sol = camiones2OPT;
                 }
+             /*   if(aux1==aux2) {
+                    System.out.println("*************************************************************************************");
+                    //numIteraciones=numIteracionesParada;
+                    pedidos=lpedidos;
+       
+                    return sol; }
+             */   
                // System.out.println("Llegue");
                // System.out.println("iteracion no " + i + " con costo " + aux1);
             }
+           // numIteracionesParada++;
         }
-        System.out.println("costo final " + aux1);
+        pedidos=lpedidos;
+       
+        return sol;
+        //System.out.println("costo final " + aux1);
         /*
         pedidos = new ArrayList<Pedido>();
         for(int y=0;y<lpedidos.size();y++){
@@ -135,9 +147,7 @@ public class Grasp {
             
         }  */  
         //System.out.println(obtenerCantAtendidos(lpedidos));
-        pedidos=lpedidos;
-        //System.out.println(obtenerCantAtendidos(pedidos));
-        return sol;
+        
     
     
     
@@ -149,28 +159,28 @@ public class Grasp {
      public ArrayList<Camion> iniciarFaseConstructiva(ArrayList<Camion>lcamiones,ArrayList<Pedido> lpedidos){
             int cantCamiones=lcamiones.size();
             int j=0;
-            
-            
             int flag=0;
             while(j<cantCamiones && hayListos(lpedidos)){
                 Ruta r = new Ruta();
                 Arista a = new Arista();
                 ArrayList<Arista> laristas=new ArrayList<Arista>();
-                System.out.println("hay por atender");
                 Camion c= lcamiones.get(j);
                 nodoInicio=EasyGas.central;
+                //System.out.println("idCamion "+ c.getIdCamion() + " hay por atender");
                 ArrayList<Pedido> LCR= new ArrayList<Pedido>();
                 nodoInicio.setHoraLlegada(Reloj.horaActual.getTime()); //hora que sale el camion
+                int cantListos=obtenerCantListo(lpedidos);
+                //System.out.println("nro listos " + cantListos + " " + nodoInicio.getHoraLlegada() + " " + c.getCantDieselActual());
                 
-                while(hayListos(lpedidos) && hayCapacidadSuficiente(c,lpedidos) && dentroDelTurno()){
+                while(hayCapacidadSuficiente(c,lpedidos)){
                   
-                   int cantListos=obtenerCantListo(lpedidos);
-                   System.out.println("hay "+cantListos + " listos con " + c.getCantGLPActual());
+                   cantListos=obtenerCantListo(lpedidos);
+                   //System.out.println("hay "+cantListos + " listos con " +(c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual()));
                    a.setNodoOrigen(nodoInicio); 
                    inicializar(c,lpedidos);
                   // System.out.println("Depues de inicializar");
-                  //System.out.println("Maximo : " + maximo);
-                  // System.out.println("Minimo : " + minimo);
+                  //  System.out.println("Tau : " + tau);
+                   // System.out.println("beta : " + beta);
                     if (flag==0){
                         LCR=obtenerLCR(c,1,lpedidos);
                         flag=1;
@@ -181,14 +191,18 @@ public class Grasp {
                   
                    //System.out.println(LCR.size());
                    Pedido p=obtenerPedidoRandom(LCR);
-                   
+                   //if(p==null) System.out.println("nulo");
                    if(p!=null){ 
                       
-                       double cantGLPsobrante=(c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual());
-                       double consumoDieselsobrante= (c.getIdTipoCamion().getCapacidadDiesel()-obtenerConsumo(c));
-                        //System.out.println("No "+ p.getIdPedido()+ " tiene pedido de "+ p.getCantGLP()+ " pero me sobra " + cantGLPsobrante);
-                       
-                       if(p.getCantGLP()<=cantGLPsobrante && obtenerConsumoPedido(c,p)<=consumoDieselsobrante && esTiempoDeEntregar(p,nodoInicio)){
+                        double cantGLPsobrante=(c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual());
+                        double consumoDieselsobrante= (c.getIdTipoCamion().getCapacidadDiesel()-obtenerConsumo(c));
+                         //System.out.println("No "+ p.getIdPedido()+ " tiene pedido de "+ p.getCantGLP()+ " pero me sobra " + cantGLPsobrante);
+                        int tiempoSegundos=obtenerTiempoEntrega(p,nodoInicio);
+                        Calendar calendarHoraFin= Calendar.getInstance();
+                        calendarHoraFin.setTime(nodoInicio.getHoraLlegada());        
+                        calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
+                        // dentroDelTurno(calendarHoraFin.getTime()    
+                        if(p.getCantGLP()<=cantGLPsobrante && obtenerConsumoPedido(c,p)<=consumoDieselsobrante && p.getHoraSolicitada().before(calendarHoraFin.getTime())   ){
                            
                            c.setCantGLPActual(c.getCantGLPActual()+p.getCantGLP());
                            a.setNodoDestino(p.getIdCliente().getIdNodo());
@@ -202,14 +216,13 @@ public class Grasp {
                                   lpedidos.get(k).setEstado("atendido");
                                   break;
                                }
-
-                           }
-                           
+                            }
                            Calendar horaCalendar= Calendar.getInstance();
                            horaCalendar.setTime(nodoInicio.getHoraLlegada());        
                            horaCalendar.add(Calendar.SECOND,obtenerTiempoEntrega(p,nodoInicio));
-                           System.out.println(Reloj.horaActual.getTime() + " camion" +c.getIdCamion() +"  pedido nro " + p.getIdPedido() + " con GLP " + p.getCantGLP() + " hora requerida " + p.getHoraSolicitada() +"  Hora atendido " + horaCalendar.getTime());
+                           //System.out.println(Reloj.horaActual.getTime() + " camion" +c.getIdCamion() +"  pedido nro " + p.getIdPedido() + " con GLP " + p.getCantGLP() + " hora requerida " + p.getHoraSolicitada() +"  Hora atendido " + horaCalendar.getTime());
                            nodoInicio=p.getIdCliente().getIdNodo();
+                           if(p.getPrioridad().equals(new String("tiene")))nodoInicio.setCantPrioridades(nodoInicio.getCantPrioridades()+1);
                            nodoInicio.setHoraLlegada(horaCalendar.getTime());
                            
 
@@ -229,23 +242,27 @@ public class Grasp {
     
     }
     // no aplica porque si viene un camion nuevo
-    public boolean dentroDelTurno(){
-        Date horaUltimoPedidoEntregado=nodoInicio.getHoraLlegada();
-        boolean resultado= EasyGas.turnoActual.getHoraFin().after(horaUltimoPedidoEntregado) ; 
-       // System.out.println(resultado);
+    public boolean dentroDelTurno(Date horaConsultada){
+        Date horaUltimoPedidoEntregado=horaConsultada;
+        boolean resultado= EasyGas.turnoActual.getHoraFin().before(horaUltimoPedidoEntregado) ; 
         return resultado;
     }
     
     public boolean esTiempoDeEntregar(Pedido p, Nodo nodoIni){
       
+        //int tiempoSegundos=obtenerTiempoEntrega(p,nodoIni);
+        //long diferencia =  tiempoSegundos;
+        //long diferenciaLimite=1*60*60;
+        //boolean resultado=diferencia<=diferenciaLimite;
+        
         int tiempoSegundos=obtenerTiempoEntrega(p,nodoIni);
         Calendar calendarHoraFin= Calendar.getInstance();
         calendarHoraFin.setTime(nodoIni.getHoraLlegada());        
         calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
-        final long MILLSECS_PER_HOUR = 60 * 60 * 1000; 
-        long diferencia =  (calendarHoraFin.getTimeInMillis() - nodoIni.getHoraLlegada().getTime()); 
-        long diferenciaLimite=1000*60*60;
-        boolean resultado=diferencia<=diferenciaLimite;
+        long diferencia =  (calendarHoraFin.getTimeInMillis() - p.getHoraSolicitada().getTime()); 
+        long limite=1000*60*60; //3 600 000
+       // System.out.println("la diferencia es " + diferencia);
+        boolean resultado=diferencia>=0 && diferencia<=limite;
         //boolean resultado=calendarHoraFin.getTime().after(p.getHoraSolicitada()) ; // hora fin > horasolicitada
         return resultado;
     
@@ -254,8 +271,10 @@ public class Grasp {
     
     public int obtenerTiempoEntrega(Pedido p,Nodo nodoIni){
         double tiempo = obtenerDistancia(nodoIni,p.getIdCliente().getIdNodo())/EasyGas.velocidad*1.0;
-        int tiempoSegundos=(int)Math.round(tiempo*60*60 );
+        int tiempoSegundos=(int)Math.round(tiempo*60*60);
         return tiempoSegundos;
+        
+        
     }
     public double obtenerConsumoPedido(Camion c, Pedido p){
     
@@ -285,51 +304,39 @@ public class Grasp {
         return cantAtendidos;
     
     }
-    public double obtenerCostoArista (Nodo nodoIni, Nodo nodoFin,Camion c,double cantGLP){
+    public double obtenerCostoArista (Nodo nodoIni, Nodo nodoFin,Camion c,Pedido p){
     
-            // C = 0.05 x ( PesoTotal / 52 ) Gal/Km
-
-            //donde el PesoTotal = PesoVehículo (llamada tara) + PesoCarga (GLP transportado)
-            //Gal = galones 
-            //double pesoTotal=c.getIdTipoCamion().getTaraTon()+c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual();
-            double pesoTotal=c.getCantGLPActual();
-            // MAX = PesoTara + PesoCarga  / distnacia
-            //double x2 = (nodoFin.getCoordX()-nodoIni.getCoordX())*(nodoFin.getCoordX()-nodoIni.getCoordX());
-            //double y2 = (nodoFin.getCoordY()-nodoIni.getCoordY())*(nodoFin.getCoordY()-nodoIni.getCoordY());
-            double distancia=0;
-            /*if (nodoIni.getCoordX()==nodoFin.getCoordX())
-                    distancia=Math.abs(nodoFin.getCoordY()-nodoIni.getCoordY());
-            if (nodoIni.getCoordY()==nodoFin.getCoordY())
-                    distancia=Math.abs(nodoFin.getCoordX()-nodoIni.getCoordX());
-            if (nodoIni.getCoordY()!=nodoFin.getCoordY() || nodoIni.getCoordX()!=nodoFin.getCoordX())
-                    distancia=Math.abs(nodoFin.getCoordX()-nodoIni.getCoordX())+
-                              Math.abs(nodoFin.getCoordY()-nodoIni.getCoordY());
-            */
-            distancia=Point2D.distance(nodoIni.getCoordX(), nodoIni.getCoordX(), nodoFin.getCoordY(), nodoFin.getCoordY());
-            //return Math.sqrt(x2+y2)/EasyGas.velocidad;
-            //System.out.println(pesoTotal/distancia);
-            /*if(distancia==0) {
-                System.out.println(nodoIni.getCoordX() + " " +nodoIni.getCoordY() );
-                System.out.println(nodoFin.getCoordX() + " " +nodoFin.getCoordY() );
-            }*/
-            
-            return cantGLP/distancia;
+            double glpActual=c.getCantGLPActual();
+            double difGLP=c.getIdTipoCamion().getCapacidadGLP()-glpActual-p.getCantGLP();
+            int tiempoSegundos=obtenerTiempoEntrega(p,nodoIni);
+            Calendar calendarHoraFin= Calendar.getInstance();
+            calendarHoraFin.setTime(nodoIni.getHoraLlegada());        
+            calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
+            long diferenciaTiemposEntregas =  (calendarHoraFin.getTimeInMillis() - p.getHoraSolicitada().getTime())/(1000*60); 
+            double distancia=Point2D.distance(nodoIni.getCoordX(), nodoIni.getCoordX(), nodoFin.getCoordY(), nodoFin.getCoordY());
+            int cantPrioridades=p.getPrioridad().equals(new String("tiene"))?1:0;
+            cantPrioridades=+nodoIni.getCantPrioridades();
+            double arriba=(distancia*difGLP*diferenciaTiemposEntregas);
+            double abajo=(glpActual+5*cantPrioridades+1);
+            double costo=arriba/abajo;
+            //beta el mejor valor es decir el 
+           // System.out.println("Costo: " + costo + " arriba " + arriba+ " abajo " + abajo + " dif tiempos "+ diferenciaTiemposEntregas);
+            return costo;
     } 
     
     public double obtenerDistancia(Nodo nodoIni, Nodo nodoFin){
         double distancia=0;
-        distancia=Point2D.distance(nodoIni.getCoordX(), nodoIni.getCoordX(), nodoFin.getCoordY(), nodoFin.getCoordY());
+        distancia=Point2D.distance(nodoIni.getCoordX(), nodoIni.getCoordY(), nodoFin.getCoordX(), nodoFin.getCoordY());
         return distancia;
     
     }
     public boolean hayCapacidadSuficiente(Camion c,ArrayList<Pedido> lpedido){
-        // y si tienen prioridad
-        int cantPrioridad=obtenerCantPriordades(lpedido);
-        //System.out.println(cantPrioridad);
+       
+        //System.out.println("prioridad " +cantPrioridad);
         int cantPedido = lpedido.size();
             for (int i=0;i<cantPedido;i++)
             {
-                    if (lpedido.get(i).getEstado().equals(new String("listo"))&&(cantPrioridad==0 || lpedido.get(i).getPrioridad().equals(new String("tiene")) ) ){
+                    if (lpedido.get(i).getEstado().equals(new String("listo")) ){
                            // System.out.println(pedidos.get(i).getCantGLP());
                            // System.out.println(c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual());
                             double cantGLPRestante=(c.getIdTipoCamion().getCapacidadGLP()-c.getCantGLPActual());
@@ -338,9 +345,18 @@ public class Grasp {
                             double consumoDieselRestante=c.getIdTipoCamion().getCapacidadDiesel()-consumoDiesel;
                             //System.out.println("Diesel Restante " + consumoDieselRestante);
                             //System.out.println("Diesel para el pedido " + consumoDieselPedido);
-                            if (cantGLPRestante >= lpedido.get(i).getCantGLP() && consumoDieselRestante>=consumoDieselPedido)
-                            {     //  System.out.println("Hay espacio para el pedido " + pedidos.get(i).getIdPedido());
-                                    return true;
+                            int tiempoSegundos=this.obtenerTiempoEntrega(lpedido.get(i), nodoInicio);
+                            Calendar calendarHoraFin= Calendar.getInstance();
+                            calendarHoraFin.setTime(nodoInicio.getHoraLlegada());        
+                            calendarHoraFin.add(Calendar.SECOND,tiempoSegundos);
+                            double costoArista=this.obtenerCostoArista(nodoInicio, lpedido.get(i).getIdCliente().getIdNodo(), c, lpedido.get(i));
+                            Date horaPosibleEntrega = calendarHoraFin.getTime();
+                            // if(p.getCantGLP()<=cantGLPsobrante && obtenerConsumoPedido(c,p)<=consumoDieselsobrante && esTiempoDeEntregar(p,nodoInicio)){
+                            if (cantGLPRestante >= lpedido.get(i).getCantGLP() && consumoDieselRestante>=consumoDieselPedido  && lpedido.get(i).getHoraSolicitada().after(calendarHoraFin.getTime()) && costoArista >=0)
+                            {    //  System.out.println( pedidos.get(i).getIdPedido() + " llegara en " + horaPosibleEntrega + " hora solicitada " +lpedido.get(i).getHoraSolicitada() );
+                                // existe por lo menos un pedido que tenga suficinete glp, diesel, que se entregue dentro del turno y que la diferencia de entrega sea poco    
+                                
+                                return true;
                             }
                             
 
@@ -351,16 +367,7 @@ public class Grasp {
     
     }
     
-    public int obtenerCantPriordades(ArrayList<Pedido> lpedidos){
-        int cantPriordad=0;
-        int cantPedidos=lpedidos.size();
-        for(int i=0;i<cantPedidos;i++){
-            if(lpedidos.get(i).getEstado().equals(new String("listo")) && lpedidos.get(i).getPrioridad().equals(new String("tiene"))) cantPriordad++;
-            
-        }
-        return cantPriordad;
-    
-    }
+
     public boolean hayListos(ArrayList<Pedido> lpedidos){
         int cantPedidos=lpedidos.size();
         for(int i=0;i<cantPedidos;i++){
@@ -408,6 +415,7 @@ Retornar listaVehiculos
      
     }
     public Camion iniciar2OPTCamion(Camion c)   {
+        if(c.getRuta()==null) return c;
         //ordena sus pedidos para tener un mejor costo 
         int cantPedidos = c.getRuta().getLaristas().size();
         Camion aux = new Camion(c.getIdCamion(),c.getIdTipoCamion());
@@ -423,7 +431,7 @@ Retornar listaVehiculos
                 aux.setRuta(c.getRuta());
                 Mejorar(aux,j,k,cantPedidos);
                 costoAux =obtenerCostoRuta(aux);
-                if (costoAux < costoMin)
+                if (costoAux!=0 && costoAux < costoMin)
                 {
                     costoMin = costoAux;
                     c = aux;
@@ -491,25 +499,19 @@ Retornar listaVehiculos
     public Pedido obtenerPedidoRandom(ArrayList<Pedido> RCL){
             int cantPedidos = RCL.size();
             int numberRandom = 0;
-            ArrayList<Pedido> conPrioridad=new ArrayList<Pedido>();
-            ArrayList<Pedido> sinPrioridad=new ArrayList<Pedido>();
+            ArrayList<Pedido> pedidosListos=new ArrayList<Pedido>();
+            
             for(int i=0;i<cantPedidos;i++){
                 if(RCL.get(i).getEstado().equals(new String("listo"))){
-                    if (RCL.get(i).getPrioridad().equals(new String("tiene"))){
-                        conPrioridad.add(RCL.get(i));
-                    }
-                    else sinPrioridad.add(RCL.get(i));
+                    pedidosListos.add(RCL.get(i));
                 }
             
             }
-            if (conPrioridad.size()!=0) {
-                numberRandom = (int)(Math.random()*conPrioridad.size());
-                return conPrioridad.get(numberRandom);
-            }
-            numberRandom = (int)(Math.random()*sinPrioridad.size());
-            if (numberRandom < sinPrioridad.size()){
-             
-                return sinPrioridad.get(numberRandom);
+            
+            numberRandom = (int)(Math.random()*pedidosListos.size());
+            if (numberRandom < pedidosListos.size()){
+                
+                return pedidosListos.get(numberRandom);
                 
             }
           
@@ -523,12 +525,15 @@ Retornar listaVehiculos
         ArrayList<Pedido> conPrioridad =new ArrayList<Pedido>();
         double costoAux = 0;
         int cantPedidos = lpedidos.size();
+        //maximo peor valor tau
+        //minimo mejor valor beta
         for (int i=0;i<cantPedidos;i++)
         {
             if (lpedidos.get(i).getEstado().equals(new String("listo"))){
-                costoAux =obtenerCostoArista(nodoInicio,lpedidos.get(i).getIdCliente().getIdNodo(),c,lpedidos.get(i).getCantGLP()); 
+                costoAux =obtenerCostoArista(nodoInicio,lpedidos.get(i).getIdCliente().getIdNodo(),c,lpedidos.get(i)); 
                 //System.out.println("Costo aux LCR " + costoAux);
-                if (costoAux <= minimo + alphaNuevo*(maximo-minimo)){
+                //minizar la funcion 
+                if (beta<=costoAux && costoAux<=( beta + alphaNuevo*(tau-beta))){
                    
                     nuevoPedidos.add(lpedidos.get(i));
                 }
@@ -562,7 +567,7 @@ Retornar listaVehiculos
         for (int i = 0;i<cantPedidos-1;i++)
         {
             nodoFin=c.getRuta().getLaristas().get(i).getNodoDestino();
-            costo = costo + obtenerCostoArista(nodoInicio,nodoFin,c,c.getRuta().getLaristas().get(i).getNodoDestino().getPedido().getCantGLP());
+            costo = costo + obtenerCostoArista(nodoInicio,nodoFin,c,c.getRuta().getLaristas().get(i).getNodoDestino().getPedido());
             nodoInicio=c.getRuta().getLaristas().get(i+1).getNodoOrigen();
         }
         
@@ -571,34 +576,33 @@ Retornar listaVehiculos
     }
     public void inicializar(Camion c,ArrayList<Pedido>lpedidos){
         
-            minimo = 0;
-            maximo= 0;
+            beta = 1000000000;
+            tau= 1;
             int cantPedidos = lpedidos.size();
             int flag=0;
             double costoAux;
            
             //System.out.println(cantPedidos);
-            for (int i=0;i<cantPedidos;i++)
-            {
-                    if (lpedidos.get(i).getEstado().equals(new String("atendido"))==false){
+            for (int i=0;i<cantPedidos;i++) {
+                    if (lpedidos.get(i).getEstado().equals(new String("listo"))){
                             
                                     
-                            costoAux=obtenerCostoArista(nodoInicio,lpedidos.get(i).getIdCliente().getIdNodo(),c,lpedidos.get(i).getCantGLP());
+                            costoAux=obtenerCostoArista(nodoInicio,lpedidos.get(i).getIdCliente().getIdNodo(),c,lpedidos.get(i));
                             //System.out.println("Este ees el costo calculado " + costoAux);  
-                            if (flag == 0){
-                                    maximo= costoAux;
-                                    minimo = costoAux;
-                                    flag =1;
-                            }else
-                            {
-                                    if (costoAux<minimo) 
-                                            minimo=costoAux;
-                                    if (costoAux>maximo) 
-                                            maximo=costoAux;
+                            // beta es el mejor valor es decir el minimo
+                            // tau es el peor valor es decir el maximo 
+                            //System.out.println(costoAux);
+                            if(costoAux>0){  
+                                 if (costoAux<beta && costoAux>=0) 
+                                            beta=costoAux;
+                                 if (costoAux>tau && costoAux!=0) 
+                                            tau=costoAux;
+                               
                             }
+                    
                     }	
             }
-           
+           //System.out.println("tau " + tau + " beta " + beta);
     
     
     
