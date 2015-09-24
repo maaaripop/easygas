@@ -58,7 +58,7 @@ public class EquipoA_grasp {
         
         //System.out.println("Cargar " + obtenerPedidosNoAtendidos(p,t) );
                 
-        
+        // cargar la lista de camiones y pedidos
         l.cargar("dataset.txt", c, p);
         
         Reloj r = new Reloj();
@@ -98,7 +98,7 @@ public class EquipoA_grasp {
                     lcamiones=g.correr();
                     p=g.getPedidos();
                     System.out.println("Costo: " + g.obtenerCostoTotal(lcamiones));
-                    double fin = System.currentTimeMillis();
+                   
                     //double tiempoTotal=(fin-inicio)/1000;
                     //System.out.printf("Tiempo de ejecucion: %.4f\n",tiempoTotal);
                  //System.out.println("Atendidos " + obtenerPedidosAtendidos(p,t) );   
@@ -137,19 +137,19 @@ public class EquipoA_grasp {
     public static int obtenerPedidosNoAtendidos(ArrayList<Pedido> lpedidos,Turno t){
         ArrayList<Pedido> pedidosListo= new ArrayList<Pedido>();
         int cantPedidos=lpedidos.size();
-        int cantListo=0;
+        int cantNoAtendidos=0;
         
         for(int i=0;i<cantPedidos;i++){
             Pedido p = lpedidos.get(i);
             
                 
                 if(p.getEstado().equals(new String("no atendido"))){
-                   cantListo++;
+                   cantNoAtendidos++;
                 }
             
             
         }
-        return cantListo;
+        return cantNoAtendidos;
     
     }    
     public static int obtenerPedidosAtendidos(ArrayList<Pedido> lpedidos,Turno t){
