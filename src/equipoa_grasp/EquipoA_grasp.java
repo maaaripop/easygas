@@ -64,7 +64,7 @@ public class EquipoA_grasp {
         Reloj r = new Reloj();
        
         double alpha = 0.3;
-        int nIteraciones = 2000;
+        int nIteraciones = 10;
         
         while(true){
             ArrayList<Camion> lcamiones= new ArrayList<Camion>();
@@ -84,9 +84,9 @@ public class EquipoA_grasp {
            
 
             if(cantListos!=0){
-                //System.out.println("Correr el grasp para " +cantListos );
+                System.out.println("Correr el grasp para " +cantListos );
                
-                //System.out.println("No Atendidos " + obtenerPedidosNoAtendidos(p,t) );
+                System.out.println("No Atendidos " + obtenerPedidosNoAtendidos(p,t) );
                     Grasp g = new Grasp();
                // for (int i = 0; i < 10; i++) {
                     
@@ -121,7 +121,7 @@ public class EquipoA_grasp {
                 
                 if(p.getEstado().equals(new String("no atendido"))){
                     //System.out.println("No atendido");
-                    if(EasyGas.lturnos.get(1).equals(t))  p.setPrioridad("tiene");
+                    if(EasyGas.lturnos.get(1).equals(t))  p.setPrioridad("no tiene");
                     if(EasyGas.lturnos.get(0).equals(t)&& p.getIdCliente().isEsPersonaNatural())  p.setPrioridad("tiene");
                     if(EasyGas.lturnos.get(2).equals(t)&& !p.getIdCliente().isEsPersonaNatural()) p.setPrioridad("tiene");
                     lpedidos.get(i).setEstado("listo");

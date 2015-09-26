@@ -45,7 +45,8 @@ public class Camion {
         this.cantGLPActual=0;
         this.cantDieselActual=0;
         this.kilometrosRecorridos=0;
-    
+        this.ruta=null;
+        
     }
     /**
      * @param idCamion the idCamion to set

@@ -18,6 +18,7 @@ public class Nodo {
     private Pedido pedido;
     String habilitado;
     private Date horaLlegada;
+    private double cantGLP;
     private int cantPrioridades;
     public Nodo(Integer idNodo) {
         this.idNodo = idNodo;
@@ -102,5 +103,19 @@ public class Nodo {
      */
     public void setCantPrioridades(int cantPrioridades) {
         this.cantPrioridades = cantPrioridades;
+    }
+
+    /**
+     * @return the cantGLP
+     */
+    public double getCantGLP() {
+        return cantGLP;
+    }
+
+    /**
+     * @param cantGLP the cantGLP to set
+     */
+    public void setCantGLP(double cantGLP) {
+        this.cantGLP = cantGLP;
     }
 }
