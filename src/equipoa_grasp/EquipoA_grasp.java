@@ -44,14 +44,14 @@ public class EquipoA_grasp {
         horaStringFin=ahoraString + " 15:59:59";
         dHoraInicio = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaStringInicio);
         dHoraFin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaStringFin);
-        t = new Turno(1,dHoraInicio,dHoraFin);
+        t = new Turno(2,dHoraInicio,dHoraFin);
         EasyGas.lturnos.add(t);
         //**************************************tercer turno**************************/
         horaStringInicio=ahoraString + " 16:00:00";
         horaStringFin=ahoraString + " 23:59:59";
         dHoraInicio = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaStringInicio);
         dHoraFin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaStringFin);
-        t = new Turno(1,dHoraInicio,dHoraFin);
+        t = new Turno(3,dHoraInicio,dHoraFin);
         //System.out.println(ahoraString);
         EasyGas.lturnos.add(t);
         /********************* fin de insertar turnos*******************************/
@@ -62,46 +62,70 @@ public class EquipoA_grasp {
         l.cargar("dataset.txt", c, p);
         
         Reloj r = new Reloj();
-       
+        t = obtenerTurnoActual();
+        EasyGas.lturnos.get(t.getIdTurno()-1).setLcamiones(c);
         double alpha = 0.3;
-        int nIteraciones = 10;
-        
+        int nIteraciones = 3000;
+        System.out.println(dHoraFin);
         while(true){
             ArrayList<Camion> lcamiones= new ArrayList<Camion>();
-            if(Reloj.horaActual.equals(dHoraFin)) {
-                l.obtenerReporte(lcamiones);
+            if(obtenerPedidosAtendidos(p,t)==p.size()) {
+                for(int y=0;y<3;y++){
+                    System.out.println("Costo del turno " + EasyGas.lturnos.get(y).getCosto());
+                    ArrayList<Camion> lresultados =  EasyGas.lturnos.get(y).getLcamiones();
+                    for(int z=0;z<lresultados.size();z++){
+                        Ruta ruta = lresultados.get(z).getRuta();
+                        if(ruta!=null){
+                            ArrayList <Arista> laristas= ruta.getLaristas();
+                            for(int w=0;w<laristas.size();w++){
+                                System.out.print(laristas.get(w).getNodoDestino().getPedido().getIdPedido() + " -> ");
+                            }
+                            
+                        }
+                    }
+                    System.out.println(" ");
+                }
                 System.out.println("Fin del dia");
-                break;
+                return;
             }
-            t = obtenerTurnoActual();
-            EasyGas.turnoActual=t;
+            Turno t2 = obtenerTurnoActual();
+
             int cantListos=0;
-            if(t!=null) cantListos=obtenerPedidosListos(p,t);
-            //System.out.println(cantListos);
+            if(t2!=null) {
+                        if(!t.equals(t2)) {
+                            System.out.println("Cambio de turno");
+                            EasyGas.lturnos.get(t2.getIdTurno()-1).setLcamiones(c); //seteo nueva flota (camiones limpios)
+                            t=t2;
+                        } else { // setteo los camiones con EsUtilizado=false;
+                            int cantUtilizados= EasyGas.lturnos.get(t2.getIdTurno()-1).getLcamiones().size();
+                            for(int y=0;y<cantUtilizados;y++) EasyGas.lturnos.get(t2.getIdTurno()-1).getLcamiones().get(y).setEsUtilizado(false);
+
+                        }
+                        cantListos=obtenerPedidosListos(p,t2);
+            }
+           // if(cantListos!=0) System.out.println("cant listos " +cantListos);
             //System.out.println(Reloj.horaActual.getTime());
             
             
            
 
             if(cantListos!=0){
-                System.out.println("Correr el grasp para " +cantListos );
-               
-                System.out.println("No Atendidos " + obtenerPedidosNoAtendidos(p,t) );
+               // System.out.println("turno " + t.getIdTurno() + " correr el grasp para " +cantListos );
+              //  System.out.println("No Atendidos " + obtenerPedidosNoAtendidos(p,t) );
                     Grasp g = new Grasp();
-               // for (int i = 0; i < 10; i++) {
-                    
                     g.setAlpha(alpha);
-                    g.setCamiones(c);
+                    g.setCamiones(EasyGas.lturnos.get(t2.getIdTurno()-1).getLcamiones());
+                  //  g.setCamiones(c);
                     g.setPedidos(p);
                     g.setNumIteraciones(nIteraciones);
                     //double inicio = System.currentTimeMillis();
                     lcamiones=g.correr();
+                    EasyGas.lturnos.get(t2.getIdTurno()-1).setLcamiones(lcamiones);
                     p=g.getPedidos();
-                    System.out.println("Costo: " + g.obtenerCostoTotal(lcamiones));
-                   
+                    EasyGas.lturnos.get(t2.getIdTurno()-1).setCosto(g.obtenerCostoTotal(EasyGas.lturnos.get(t2.getIdTurno()-1).getLcamiones()));
                     //double tiempoTotal=(fin-inicio)/1000;
                     //System.out.printf("Tiempo de ejecucion: %.4f\n",tiempoTotal);
-                 //System.out.println("Atendidos " + obtenerPedidosAtendidos(p,t) );   
+                    System.out.println("Atendidos " + obtenerPedidosAtendidos(p,t2) );   
                     
                // }
               //  l.obtenerReporte(lcamiones);
@@ -119,7 +143,7 @@ public class EquipoA_grasp {
             Pedido p = lpedidos.get(i);
             if(perteneceATurno(p.getHoraSolicitada(),t)) {
                 
-                if(p.getEstado().equals(new String("no atendido"))){
+                if(p.getEstado().equals(new String("no atendido")) || p.getEstado().equals(new String("listo"))){
                     //System.out.println("No atendido");
                     if(EasyGas.lturnos.get(1).equals(t))  p.setPrioridad("no tiene");
                     if(EasyGas.lturnos.get(0).equals(t)&& p.getIdCliente().isEsPersonaNatural())  p.setPrioridad("tiene");
@@ -169,6 +193,9 @@ public class EquipoA_grasp {
         return cantListo;
     
     }
+    
+    
+    
     
     public static Turno obtenerTurnoActual(){
         //String originalString = "2010-07-14 09:00:02";

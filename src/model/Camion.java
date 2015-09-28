@@ -18,6 +18,7 @@ public class Camion {
    private double cantGLPActual;
    private double cantDieselActual;
    private double kilometrosRecorridos;
+   private boolean esUtilizado;
    
    public void agregarRuta(ArrayList<Pedido> lpedidos){
        Ruta r = new Ruta();
@@ -46,6 +47,8 @@ public class Camion {
         this.cantDieselActual=0;
         this.kilometrosRecorridos=0;
         this.ruta=null;
+        this.esUtilizado=false;
+      
         
     }
     /**
@@ -137,6 +140,20 @@ public class Camion {
      */
     public void setKilometrosRecorridos(double kilometrosRecorridos) {
         this.kilometrosRecorridos = kilometrosRecorridos;
+    }
+
+    /**
+     * @return the esUtilizado
+     */
+    public boolean isEsUtilizado() {
+        return esUtilizado;
+    }
+
+    /**
+     * @param esUtilizado the esUtilizado to set
+     */
+    public void setEsUtilizado(boolean esUtilizado) {
+        this.esUtilizado = esUtilizado;
     }
 }
 
