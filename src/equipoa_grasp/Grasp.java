@@ -5,9 +5,12 @@
 package equipoa_grasp;
 
 import java.awt.geom.Point2D;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.*;
 import util.*;
 import model.Constantes.EasyGas;
@@ -26,6 +29,16 @@ public class Grasp {
     private double beta; // mejor valor
     private double tau;  // peor valor
     private Nodo nodoInicio;
+    private Mapa mapa;
+    public Grasp(){
+        try {
+            mapa= new Mapa(200,300);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Grasp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+       
+    }
     /**
      * @return the camiones
      */
@@ -131,9 +144,9 @@ public class Grasp {
                 if(c.getRuta()==null || c.getRuta().getLaristas()==null || c.getRuta().getLaristas().size()==0) { // no tiene ruta
                     nodoInicio=EasyGas.central;
                     nodoInicio.setCantGLP(0);
-                    nodoInicio.setHoraLlegada(Reloj.horaActual.getTime()); //hora que sale el camion
+                    nodoInicio.setHoraLlegada(Reloj.horaActual.getTime()); //hora que sale el camion de la distribuidora
                 }
-                else { // nodoInicio es el ultimo nodo que llego
+                else { // nodoInicio es el ultimo nodo que llego la ruta
                     int cantAristas=c.getRuta().getLaristas().size();
                     //System.out.println(cantAristas);
                     Nodo nodoUltimo=c.getRuta().getLaristas().get(cantAristas-1).getNodoDestino();
@@ -188,7 +201,7 @@ public class Grasp {
                 r.setLaristas(laristas);
                 if(c.getRuta()==null)c.setRuta(r);
                 else {
-                   // System.out.println("Anhade aristas");
+                   // si ya tiene ruta solo las agrega al final (al final el proceso de mejora las ordena es decir hace recalcular ruta)
                     c.getRuta().getLaristas().addAll(laristas);
                 }
                // c.setRuta(r);
@@ -323,6 +336,7 @@ public class Grasp {
     public double obtenerDistancia(Nodo nodoIni, Nodo nodoFin){
         double distancia=0;
         distancia=Point2D.distance(nodoIni.getCoordX(), nodoIni.getCoordY(), nodoFin.getCoordX(), nodoFin.getCoordY());
+      //  distancia = mapa.distanciaMinima(nodoIni.getCoordX(), nodoIni.getCoordY(), nodoFin.getCoordX(), nodoFin.getCoordY());
         return Math.abs(distancia);
     
     }

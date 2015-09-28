@@ -96,7 +96,7 @@ public class EquipoA_grasp {
                             System.out.println("Cambio de turno");
                             EasyGas.lturnos.get(t2.getIdTurno()-1).setLcamiones(c); //seteo nueva flota (camiones limpios)
                             t=t2;
-                        } else { // setteo los camiones con EsUtilizado=false;
+                        } else { // setteo los camiones con EsUtilizado=false; para volver utilizar el grasp
                             int cantUtilizados= EasyGas.lturnos.get(t2.getIdTurno()-1).getLcamiones().size();
                             for(int y=0;y<cantUtilizados;y++) EasyGas.lturnos.get(t2.getIdTurno()-1).getLcamiones().get(y).setEsUtilizado(false);
 
