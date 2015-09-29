@@ -26,6 +26,7 @@ public class EasyGas {
     public static Nodo central;
     public static ArrayList<Turno> lturnos = new ArrayList<Turno>();
     public static Turno turnoActual;
+    public static Date horaActual;
    
     
 }

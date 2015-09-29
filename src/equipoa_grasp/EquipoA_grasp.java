@@ -59,7 +59,47 @@ public class EquipoA_grasp {
         //System.out.println("Cargar " + obtenerPedidosNoAtendidos(p,t) );
                 
         // cargar la lista de camiones y pedidos
-        l.cargar("dataset.txt", c, p);
+        
+        Date horaActual= new Date();
+        String horaActualString = new SimpleDateFormat("yyyy-MM-dd").format(ahora);
+        String horaActualStringFinal= horaActualString + " 06:40:00";
+        EasyGas.horaActual = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(horaActualStringFinal);
+        t= EasyGas.lturnos.get(0);
+        
+        
+        for(int i=0;i<1;i++){
+            String nombreArchivo="dataset-"+i+".txt";
+            l.cargar(nombreArchivo, c, p);
+            obtenerPedidosListos(p,t);
+            double alpha = 0.35;
+            int nIteraciones=4000;
+            ArrayList<Camion> lcamiones=new ArrayList<Camion>();
+            Grasp g = new Grasp();
+            g.setAlpha(alpha);
+            g.setCamiones(c);
+            g.setPedidos(p);
+            g.setNumIteraciones(nIteraciones);
+            lcamiones=g.correr();
+            ArrayList<Camion> lresultados =  lcamiones;
+            int cantAtendidos=0;
+            for(int z=0;z<lresultados.size();z++){
+                Ruta ruta = lresultados.get(z).getRuta();
+                if(ruta!=null){
+                    ArrayList <Arista> laristas= ruta.getLaristas();
+                    for(int w=0;w<laristas.size();w++){
+                        System.out.print(laristas.get(w).getNodoDestino().getPedido().getIdPedido() + " -> ");
+                        cantAtendidos++;
+                    }
+
+                }
+            }
+            System.out.println("");
+            System.out.println("Cant Pedidos atendidos " + cantAtendidos);
+            System.out.println("Costo " + g.obtenerCostoTotal(lcamiones));
+
+        }
+        
+        /*
         
         Reloj r = new Reloj();
         t = obtenerTurnoActual();
@@ -131,7 +171,7 @@ public class EquipoA_grasp {
               //  l.obtenerReporte(lcamiones);
             }
             
-        }
+        }*/
     }
     
     public static int obtenerPedidosListos(ArrayList<Pedido> lpedidos,Turno t){
@@ -141,7 +181,13 @@ public class EquipoA_grasp {
         
         for(int i=0;i<cantPedidos;i++){
             Pedido p = lpedidos.get(i);
-            if(perteneceATurno(p.getHoraSolicitada(),t)) {
+            if(EasyGas.lturnos.get(1).equals(t))  p.setPrioridad("no tiene");
+            if(EasyGas.lturnos.get(0).equals(t)&& p.getIdCliente().isEsPersonaNatural())  p.setPrioridad("tiene");
+            if(EasyGas.lturnos.get(2).equals(t)&& !p.getIdCliente().isEsPersonaNatural()) p.setPrioridad("tiene");
+            lpedidos.get(i).setEstado("listo");
+            cantListo++;
+            
+            /*            if(perteneceATurno(p.getHoraSolicitada(),t)) {
                 
                 if(p.getEstado().equals(new String("no atendido")) || p.getEstado().equals(new String("listo"))){
                     //System.out.println("No atendido");
@@ -151,7 +197,7 @@ public class EquipoA_grasp {
                     lpedidos.get(i).setEstado("listo");
                     cantListo++;
                 }
-            }
+            }*/
             
         }
         return cantListo;
