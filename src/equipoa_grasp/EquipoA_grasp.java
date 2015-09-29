@@ -68,11 +68,12 @@ public class EquipoA_grasp {
         
         
         for(int i=0;i<1;i++){
-            String nombreArchivo="dataset-"+i+".txt";
+            int cantAtendidos=0; 
+            String nombreArchivo="dataset-9.txt";
             l.cargar(nombreArchivo, c, p);
             obtenerPedidosListos(p,t);
-            double alpha = 0.35;
-            int nIteraciones=4000;
+            double alpha = 0.3;
+            int nIteraciones=3000;
             ArrayList<Camion> lcamiones=new ArrayList<Camion>();
             Grasp g = new Grasp();
             g.setAlpha(alpha);
@@ -81,13 +82,13 @@ public class EquipoA_grasp {
             g.setNumIteraciones(nIteraciones);
             lcamiones=g.correr();
             ArrayList<Camion> lresultados =  lcamiones;
-            int cantAtendidos=0;
+           
             for(int z=0;z<lresultados.size();z++){
                 Ruta ruta = lresultados.get(z).getRuta();
                 if(ruta!=null){
                     ArrayList <Arista> laristas= ruta.getLaristas();
                     for(int w=0;w<laristas.size();w++){
-                        System.out.print(laristas.get(w).getNodoDestino().getPedido().getIdPedido() + " -> ");
+                      //  System.out.print(laristas.get(w).getNodoDestino().getPedido().getIdPedido() + " -> ");
                         cantAtendidos++;
                     }
 

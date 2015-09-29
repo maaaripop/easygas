@@ -160,7 +160,7 @@ public class Grasp {
                
                 int cantListos=obtenerCantListo(lpedidos);
                 while(hayCapacidadSuficiente(c,lpedidos)){ 
-                    System.out.println("Quedan  "  + obtenerCantListo(lpedidos));
+                  //  System.out.println("Quedan  "  + obtenerCantListo(lpedidos));
                     inicializar(c,lpedidos); 
                     LCR=obtenerLCR(c,alpha,lpedidos);
                     if(LCR.size()==0){
